@@ -14,20 +14,21 @@ CLASS_NAMES = [
 IMAGE_SIZE = (128, 128)
 MODEL_PATH = "models/final/animal_classifier.h5"
 
-_model = None
+# ── Load model at startup + warmup so first prediction is fast ────────
+import tensorflow as tf
 
-def get_model():
-    global _model
-    if _model is None:
-        import tensorflow as tf
-        _model = tf.keras.models.load_model(MODEL_PATH)
-    return _model
+print("Loading model...")
+model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+
+# Warmup: run one dummy prediction to compile the graph
+_dummy = np.zeros((1, IMAGE_SIZE[0], IMAGE_SIZE[1], 3), dtype=np.float32)
+model.predict(_dummy, verbose=0)
+print("Model ready and warmed up.")
 
 
 def predict(image: np.ndarray) -> dict:
     if image is None:
         return {c: 0.0 for c in CLASS_NAMES}
-    model = get_model()
     img = Image.fromarray(image.astype("uint8")).convert("RGB").resize(IMAGE_SIZE, Image.BILINEAR)
     arr = np.array(img, dtype=np.float32) / 255.0
     arr = np.expand_dims(arr, axis=0)
