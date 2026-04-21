@@ -4,6 +4,7 @@ from PIL import Image
 import gradio as gr
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 CLASS_NAMES = [
     "Beetle", "Butterfly", "Cat", "Cow", "Dog",
@@ -13,13 +14,22 @@ CLASS_NAMES = [
 IMAGE_SIZE = (128, 128)
 MODEL_PATH = "models/final/animal_classifier.h5"
 
-import tensorflow as tf
-print("Loading model...")
-model = tf.keras.models.load_model(MODEL_PATH)
-print("Model ready:", model.input_shape)
+# Lazy-load model on first prediction to avoid startup timeout
+_model = None
+
+def get_model():
+    global _model
+    if _model is None:
+        import tensorflow as tf
+        _model = tf.keras.models.load_model(MODEL_PATH)
+        print("Model loaded:", _model.input_shape)
+    return _model
 
 
 def predict(image: Image.Image):
+    if image is None:
+        return {}
+    model = get_model()
     img = image.convert("RGB").resize(IMAGE_SIZE, Image.BILINEAR)
     arr = np.array(img, dtype=np.float32) / 255.0
     arr = np.expand_dims(arr, axis=0)
