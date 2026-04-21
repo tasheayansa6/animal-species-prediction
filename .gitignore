@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.env
+.venv
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Large data — exclude training/validation/test image sets
+data/
+src/data/_subset_train/
+src/data/_subset_val/
+src/data/_subset_test/
+src/data/Training*/
+src/data/Validation*/
+src/data/Testing*/
+src/data/Interesting*/
+
+# Model checkpoints (keep only final model)
+models/checkpoints/
+models/logs/
+
+# Outputs
+outputs/
+
+# Kaggle credentials
+kaggle.json
+.kaggle/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# App uploads
+app/uploads/
+
+# SQLite DB
+*.db
