@@ -24,36 +24,30 @@ def get_model():
     return _model
 
 
-def predict(image):
+def predict(image: np.ndarray) -> dict:
     if image is None:
-        return {}
+        return {c: 0.0 for c in CLASS_NAMES}
     model = get_model()
-    img = Image.fromarray(image).convert("RGB").resize(IMAGE_SIZE, Image.BILINEAR)
+    img = Image.fromarray(image.astype("uint8")).convert("RGB").resize(IMAGE_SIZE, Image.BILINEAR)
     arr = np.array(img, dtype=np.float32) / 255.0
     arr = np.expand_dims(arr, axis=0)
     proba = model.predict(arr, verbose=0)[0]
     return {CLASS_NAMES[i]: float(proba[i]) for i in range(len(CLASS_NAMES))}
 
 
-with gr.Blocks(theme=gr.themes.Soft(), title="🐾 Animal Species Classifier") as demo:
-    gr.Markdown(
-        """
-        # 🐾 Animal Species Classifier
-        Upload a photo of an animal to classify it into one of **15 species**.
+demo = gr.Interface(
+    fn=predict,
+    inputs=gr.Image(type="numpy", label="Upload Animal Image"),
+    outputs=gr.Label(num_top_classes=5, label="Predictions"),
+    title="🐾 Animal Species Classifier",
+    description=(
+        "Upload a photo of an animal to classify it into one of 15 species.\n\n"
+        "**Classes:** Beetle · Butterfly · Cat · Cow · Dog · Elephant · Gorilla · "
+        "Hippo · Lizard · Monkey · Mouse · Panda · Spider · Tiger · Zebra"
+    ),
+    theme=gr.themes.Soft(),
+    allow_flagging="never",
+    api_name="predict",
+)
 
-        **Classes:** Beetle · Butterfly · Cat · Cow · Dog · Elephant · Gorilla ·
-        Hippo · Lizard · Monkey · Mouse · Panda · Spider · Tiger · Zebra
-
-        *Model: VGG-16 Transfer Learning (TensorFlow/Keras)*
-        """
-    )
-    with gr.Row():
-        img_input = gr.Image(label="Upload Animal Image", type="numpy")
-        label_output = gr.Label(num_top_classes=5, label="Predictions")
-
-    submit_btn = gr.Button("Classify", variant="primary")
-    submit_btn.click(fn=predict, inputs=img_input, outputs=label_output)
-    img_input.change(fn=predict, inputs=img_input, outputs=label_output)
-
-if __name__ == "__main__":
-    demo.launch()
+demo.launch()
