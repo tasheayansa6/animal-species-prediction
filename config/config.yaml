@@ -1,0 +1,89 @@
+# ============================================================
+# Main Configuration File
+# ============================================================
+
+project:
+  name: "animal-species-prediction"
+  version: "1.0.0"
+  seed: 42
+
+# ---- Paths ----
+# The dataset already lives inside src/data/ with pre-made splits.
+# We point directly to those folders — no preprocessing needed.
+paths:
+  # Raw dataset root (already split by the dataset provider)
+  dataset_root:    "src/data"
+  train_dir:       "src/data/Training Data/Training Data"
+  val_dir:         "src/data/Validation Data/Validation Data"
+  test_dir:        "src/data/Testing Data/Testing Data"
+
+  # Legacy paths (kept for compatibility)
+  raw_data:        "src/data"
+  processed_data:  "src/data"
+
+  metadata_dir:    "data/metadata"
+  models_dir:      "models"
+  checkpoints_dir: "models/checkpoints"
+  final_model_dir: "models/final"
+  logs_dir:        "models/logs"
+  outputs_dir:     "outputs"
+  figures_dir:     "outputs/figures"
+  reports_dir:     "outputs/reports"
+  predictions_dir: "outputs/predictions"
+
+# ---- Data ----
+data:
+  image_size: [128, 128]    # 128×128 is ~3× faster than 224×224 on CPU
+  channels: 3
+  batch_size: 16            # Good balance of speed and memory
+  num_workers: 0            # 0 = no multiprocessing, avoids memory spikes
+  # Classes exactly as named in the dataset folders (capitalized)
+  classes:
+    - Beetle
+    - Butterfly
+    - Cat
+    - Cow
+    - Dog
+    - Elephant
+    - Gorilla
+    - Hippo
+    - Lizard
+    - Monkey
+    - Mouse
+    - Panda
+    - Spider
+    - Tiger
+    - Zebra
+
+# ---- Training ----
+training:
+  epochs: 10                        # 10 epochs — saves time, still good accuracy
+  learning_rate: 0.0001
+  fine_tune_learning_rate: 0.00001
+  optimizer: "adam"
+  loss: "categorical_crossentropy"
+  metrics: ["accuracy"]
+  early_stopping_patience: 4
+  reduce_lr_patience: 2
+  reduce_lr_factor: 0.5
+  min_lr: 0.000001
+
+# ---- Transfer Learning ----
+transfer_learning:
+  base_model: "VGG16"
+  weights: "imagenet"
+  include_top: false
+  freeze_base: true
+  fine_tune_at: 15
+  fine_tune_epochs: 3               # Minimal fine-tuning on CPU
+
+# ---- Augmentation ----
+augmentation:
+  rotation_range: 20
+  width_shift_range: 0.2
+  height_shift_range: 0.2
+  shear_range: 0.15
+  zoom_range: 0.2
+  horizontal_flip: true
+  fill_mode: "nearest"
+  brightness_range: [0.8, 1.2]

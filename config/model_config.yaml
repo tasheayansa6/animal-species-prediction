@@ -1,0 +1,36 @@
+# ============================================================
+# Model Architecture Configuration
+# ============================================================
+
+vgg16:
+  input_shape: [128, 128, 3]
+  weights: "imagenet"
+  include_top: false
+  pooling: null
+
+custom_head:
+  global_average_pooling: true
+  dense_layers:
+    - units: 512
+      activation: "relu"
+      batch_norm: true
+      dropout: 0.5
+    - units: 256
+      activation: "relu"
+      batch_norm: true
+      dropout: 0.3
+  output_units: 15
+  output_activation: "softmax"
+
+regularization:
+  l2_lambda: 0.0001
+
+compile:
+  optimizer: "adam"
+  learning_rate: 0.0001
+  loss: "categorical_crossentropy"
+  metrics: ["accuracy", "top_k_categorical_accuracy"]
+
+fine_tuning:
+  unfreeze_from_layer: 15
+  learning_rate: 0.00001

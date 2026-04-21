@@ -1,0 +1,41 @@
+# ============================================================
+# Data Configuration
+# ============================================================
+
+dataset:
+  name: "Animal Image Classification Dataset"
+  source: "Kaggle"
+  kaggle_dataset: "utkarshsaxenadn/animal-image-classification-dataset"
+  num_classes: 15
+  pre_split: true   # Dataset already comes with Train/Validation/Testing splits
+
+# Folder names exactly as they appear in the dataset (capitalized)
+classes:
+  - Beetle
+  - Butterfly
+  - Cat
+  - Cow
+  - Dog
+  - Elephant
+  - Gorilla
+  - Hippo
+  - Lizard
+  - Monkey
+  - Mouse
+  - Panda
+  - Spider
+  - Tiger
+  - Zebra
+
+# Approximate image counts per split
+split_counts:
+  train:      2000   # per class (30,000 total)
+  validation: 100    # per class (~1,500 total, varies)
+  test:       varies # varies per class (~2,407 total)
+
+preprocessing:
+  target_size: [224, 224]
+  color_mode: "rgb"
+  rescale: 0.00392156862   # 1/255
+  interpolation: "bilinear"
+  note: "No preprocessing step needed — dataset is already split and ready to use"
