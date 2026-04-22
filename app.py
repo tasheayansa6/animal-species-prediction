@@ -53,9 +53,8 @@ demo = gr.Interface(
         "**Classes:** Beetle · Butterfly · Cat · Cow · Dog · Elephant · Gorilla · "
         "Hippo · Lizard · Monkey · Mouse · Panda · Spider · Tiger · Zebra"
     ),
-    theme=gr.themes.Soft(),
-    allow_flagging="never",
+    flagging_mode="never",
     api_name="predict",
 )
 
-demo.launch()
+demo.launch(theme=gr.themes.Soft())
