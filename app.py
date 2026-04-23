@@ -3,22 +3,21 @@ import numpy as np
 from PIL import Image
 import gradio as gr
 
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-
 CLASS_NAMES = [
     "Beetle", "Butterfly", "Cat", "Cow", "Dog",
     "Elephant", "Gorilla", "Hippo", "Lizard", "Monkey",
     "Mouse", "Panda", "Spider", "Tiger", "Zebra",
 ]
 IMAGE_SIZE = (128, 128)
-MODEL_PATH = "models/final/animal_classifier.h5"
+TFLITE_PATH = "models/final/animal_classifier.tflite"
 
-# Load model at startup - no background thread, just load it
-print("Loading model...")
-import tensorflow as tf
-model = tf.keras.models.load_model(MODEL_PATH, compile=False)
-print("Model loaded successfully!")
+print("Loading TFLite model...")
+import tflite_runtime.interpreter as tflite
+interpreter = tflite.Interpreter(model_path=TFLITE_PATH)
+interpreter.allocate_tensors()
+input_details  = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+print("Model ready!")
 
 
 def predict(image: np.ndarray) -> dict:
@@ -27,7 +26,9 @@ def predict(image: np.ndarray) -> dict:
     img = Image.fromarray(image.astype("uint8")).convert("RGB").resize(IMAGE_SIZE, Image.BILINEAR)
     arr = np.array(img, dtype=np.float32) / 255.0
     arr = np.expand_dims(arr, axis=0)
-    proba = model.predict(arr, verbose=0)[0]
+    interpreter.set_tensor(input_details[0]["index"], arr)
+    interpreter.invoke()
+    proba = interpreter.get_tensor(output_details[0]["index"])[0]
     return {CLASS_NAMES[i]: float(proba[i]) for i in range(len(CLASS_NAMES))}
 
 
@@ -39,11 +40,10 @@ demo = gr.Interface(
     description=(
         "Upload a photo of an animal to classify it into one of 15 species.\n\n"
         "**Classes:** Beetle · Butterfly · Cat · Cow · Dog · Elephant · Gorilla · "
-        "Hippo · Lizard · Monkey · Mouse · Panda · Spider · Tiger · Zebra\n\n"
-        "*Note: First startup takes 2-3 minutes to load the model.*"
+        "Hippo · Lizard · Monkey · Mouse · Panda · Spider · Tiger · Zebra"
     ),
     flagging_mode="never",
     api_name="predict",
 )
 
-demo.queue().launch()
+demo.launch()
