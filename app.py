@@ -57,4 +57,4 @@ demo = gr.Interface(
     api_name="predict",
 )
 
-demo.launch(theme=gr.themes.Soft())
+demo.launch()
