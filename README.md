@@ -49,9 +49,27 @@ startup_duration_timeout: 1h
 | Output | 15-class softmax |
 | Strategy | Two-phase transfer learning |
 
----
+## 📊 Results
 
-## 🗂️ Project Structure
+| Metric | Value |
+|--------|-------|
+| Best Validation Accuracy | **60.3%** |
+| Best Top-3 Accuracy | **82.4%** |
+| Training Epochs | 10 |
+| Best Epoch | 10 |
+
+> *Trained on 200 images/class (3,000 total) due to CPU constraints. Full dataset training expected to reach 88–94%.*
+
+### Training Curves
+![Training Curves](outputs/figures/training_curves.png)
+
+### Confusion Matrix
+![Confusion Matrix](outputs/figures/confusion_matrix_test.png)
+
+### Per-Class Accuracy
+![Per-Class Accuracy](outputs/figures/per_class_accuracy.png)
+
+---
 
 ```
 animal-species-prediction/

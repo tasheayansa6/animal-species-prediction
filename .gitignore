@@ -35,7 +35,8 @@ models/logs/
 models/final/*.h5
 
 # Outputs
-outputs/
+outputs/figures/.gitkeep
+outputs/reports/.gitkeep
 
 # Kaggle credentials
 kaggle.json
