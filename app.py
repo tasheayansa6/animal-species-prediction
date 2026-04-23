@@ -231,12 +231,12 @@ def build_ui(name, conf, top5):
     return result_html + bars_section
 
 
-with gr.Blocks(css=CSS, title="Animal Species Classifier") as demo:
+with gr.Blocks(css=CSS, title="Sanyii Bineeldaa") as demo:
 
     # Header
     gr.HTML("""
     <div class="app-header">
-        <div class="app-title">🐾 Animal Species Classifier</div>
+        <div class="app-title">🐾 Sanyii Bineeldaa</div>
         <div class="app-subtitle">VGG-16 Transfer Learning &nbsp;·&nbsp; 15 Species &nbsp;·&nbsp; TFLite</div>
     </div>
     """)
