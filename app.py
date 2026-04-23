@@ -11,9 +11,16 @@ CLASS_NAMES = [
 IMAGE_SIZE = (128, 128)
 TFLITE_PATH = "models/final/animal_classifier.tflite"
 
+# Use ai_edge_litert (the new TFLite runtime for Python 3.13)
+# Falls back to tensorflow.lite if not available
 print("Loading TFLite model...")
-import tflite_runtime.interpreter as tflite
-interpreter = tflite.Interpreter(model_path=TFLITE_PATH)
+try:
+    from ai_edge_litert.interpreter import Interpreter
+    interpreter = Interpreter(model_path=TFLITE_PATH)
+except Exception:
+    import tensorflow as tf
+    interpreter = tf.lite.Interpreter(model_path=TFLITE_PATH)
+
 interpreter.allocate_tensors()
 input_details  = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
