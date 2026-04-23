@@ -1,5 +1,4 @@
 import os
-import threading
 import numpy as np
 from PIL import Image
 import gradio as gr
@@ -15,31 +14,20 @@ CLASS_NAMES = [
 IMAGE_SIZE = (128, 128)
 MODEL_PATH = "models/final/animal_classifier.h5"
 
-_model = None
-_model_ready = threading.Event()
-
-def load_model_background():
-    global _model
-    import tensorflow as tf
-    print("Loading model in background...")
-    _model = tf.keras.models.load_model(MODEL_PATH, compile=False)
-    _model_ready.set()
-    print("Model ready.")
-
-# Start loading immediately in background thread
-threading.Thread(target=load_model_background, daemon=True).start()
+# Load model at startup - no background thread, just load it
+print("Loading model...")
+import tensorflow as tf
+model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+print("Model loaded successfully!")
 
 
 def predict(image: np.ndarray) -> dict:
-    if not _model_ready.is_set():
-        # Still loading — return a friendly message via label
-        return {"Model is loading, please wait 30s and try again...": 1.0}
     if image is None:
         return {c: 0.0 for c in CLASS_NAMES}
     img = Image.fromarray(image.astype("uint8")).convert("RGB").resize(IMAGE_SIZE, Image.BILINEAR)
     arr = np.array(img, dtype=np.float32) / 255.0
     arr = np.expand_dims(arr, axis=0)
-    proba = _model.predict(arr, verbose=0)[0]
+    proba = model.predict(arr, verbose=0)[0]
     return {CLASS_NAMES[i]: float(proba[i]) for i in range(len(CLASS_NAMES))}
 
 
@@ -51,10 +39,11 @@ demo = gr.Interface(
     description=(
         "Upload a photo of an animal to classify it into one of 15 species.\n\n"
         "**Classes:** Beetle · Butterfly · Cat · Cow · Dog · Elephant · Gorilla · "
-        "Hippo · Lizard · Monkey · Mouse · Panda · Spider · Tiger · Zebra"
+        "Hippo · Lizard · Monkey · Mouse · Panda · Spider · Tiger · Zebra\n\n"
+        "*Note: First startup takes 2-3 minutes to load the model.*"
     ),
     flagging_mode="never",
     api_name="predict",
 )
 
-demo.launch()
+demo.queue().launch()

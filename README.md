@@ -9,6 +9,7 @@ app_file: app.py
 pinned: false
 license: mit
 short_description: Predict animal species using ML
+startup_duration_timeout: 1h
 ---
 
 # Animal Species Prediction
