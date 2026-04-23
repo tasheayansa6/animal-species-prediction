@@ -32,6 +32,7 @@ src/data/Interesting*/
 # Model checkpoints (keep only final model)
 models/checkpoints/
 models/logs/
+models/final/*.h5
 
 # Outputs
 outputs/
